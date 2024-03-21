@@ -25,7 +25,7 @@ public class HelloController {
             welcomeText.setText("File not found.");
         }
     }
-//hello   asasasasas
+//hello
     private static String relayFile() {
         return "C:\\Users\\Woottam\\Documents\\Rocket_League_Overlay\\Rocket League DO\\Rocket League Dynamic Overlay\\overlay.html";
     }
