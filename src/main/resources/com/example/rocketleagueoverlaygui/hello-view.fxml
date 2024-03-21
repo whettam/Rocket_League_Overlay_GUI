@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="200.0" prefWidth="344.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.rocketleagueoverlaygui.HelloController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+   <Label fx:id="bannerText" alignment="CENTER" style="-fx-background-color: blue; -fx-text-fill: yellow;" text="Rocket League Overlay - Control Panel" textAlignment="CENTER" translateY="-20.0" />
+
+    <Label fx:id="welcomeText" />
+    <Button fx:id="runOverlayBtn" onAction="#onHelloButtonClick" text="Run Overlay" />
+</VBox>
