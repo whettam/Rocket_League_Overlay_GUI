@@ -1,6 +1,7 @@
 package com.example.rocketleagueoverlaygui;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
 import java.awt.*;
@@ -21,6 +22,7 @@ public class HelloController {
         if (filePath != null) {
             welcomeText.setText("File found");
             openFiles(filePath);
+            openOBS();
         } else {
             welcomeText.setText("File not found.");
         }
@@ -39,7 +41,7 @@ public class HelloController {
                 Desktop.getDesktop().browse(new URI("file:///" + encodedPath)); // Open HTML file
 
 
-                String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe"; // Example path, adjust as needed
+                String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe";
 
                 // Check if the BakkesMod executable exists
                 File bakkesModFile = new File(bakkesModPath);
@@ -60,7 +62,7 @@ public class HelloController {
     private void openF6PanelInBakkesMod() {
         try {
             // Specify the path to the BakkesMod executable
-            String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe"; // Example path, adjust as needed
+            String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe";
 
             // Check if the BakkesMod executable exists
             File bakkesModFile = new File(bakkesModPath);
@@ -81,6 +83,30 @@ public class HelloController {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void openOBS() {
+        try {
+            String obsPath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\OBS Studio\\OBS Studio (64bit).lnk"; // Update with your OBS path
+            File obsFile = new File(obsPath);
+            if (obsFile.exists() && obsFile.isFile()) {
+                // Open OBS file using default application
+                Desktop.getDesktop().open(obsFile);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("OBS Studio executable not found at: " + obsPath);
+                alert.showAndWait();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error opening OBS Studio: " + ex.getMessage());
+            alert.showAndWait();
         }
     }
 }
