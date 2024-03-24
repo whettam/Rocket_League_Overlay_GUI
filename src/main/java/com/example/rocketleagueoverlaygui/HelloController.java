@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 
 public class HelloController {
 
@@ -18,21 +20,30 @@ public class HelloController {
 
     @FXML
     protected void onHelloButtonClick() {
-        String filePath = relayFile();
+        String filePath = overlayHTML();
         if (filePath != null) {
             welcomeText.setText("File found");
-            openFiles(filePath);
-            openOBS();
+            openFiles(filePath); // open overlay.html
+            openOBS(); // open OBS Studio
+            openConsoleAndRunNode();
+//            openShell(); // open PowerShell
         } else {
             welcomeText.setText("File not found.");
         }
     }
-//hello update
-    //second comment
-    private static String relayFile() {
-        return "C:\\Users\\Woottam\\Documents\\Rocket_League_Overlay\\Rocket League DO\\Rocket League Dynamic Overlay\\overlay.html";
+
+    //accessing the overlay.html file
+    private static String overlayHTML() {
+        System.out.println(getHostName() + "yeeeeeeeett"); // print users name to console
+        return "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\Rocket League Dynamic Overlay\\overlay.html";
     }
 
+    //access the current username of the Windows profile logged in
+    private static String getHostName() {
+        return System.getProperty("user.name");
+    }
+
+    // opens BakkesMod and overlay.html
     private void openFiles(String filePath) {
         try {
             if (Desktop.isDesktopSupported()) {
@@ -58,7 +69,7 @@ public class HelloController {
         }
     }
 
-
+    // opens BakkesMod Console in Rocket League - NOT WORKING
     private void openF6PanelInBakkesMod() {
         try {
             // Specify the path to the BakkesMod executable
@@ -86,9 +97,10 @@ public class HelloController {
         }
     }
 
+    //opens OBS Studio
     public void openOBS() {
         try {
-            String obsPath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\OBS Studio\\OBS Studio (64bit).lnk"; // Update with your OBS path
+            String obsPath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\OBS Studio\\OBS Studio (64bit).lnk";
             File obsFile = new File(obsPath);
             if (obsFile.exists() && obsFile.isFile()) {
                 // Open OBS file using default application
@@ -109,4 +121,79 @@ public class HelloController {
             alert.showAndWait();
         }
     }
+
+    //opens PowerShell
+    public void openShell() {
+        try {
+
+            String shellPath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Windows PowerShell\\Windows PowerShell ISE.lnk"; // PowerShell file path
+            String relayPath = "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\relayserverandplugin\\SOS Relay Server (run in cmd with node)\\sos-ws-relay-master";
+
+            File shellFile = new File(shellPath);
+            if (shellFile.exists() && shellFile.isFile()) {
+                // Open PowerShell using default application
+                Desktop.getDesktop().open(shellFile);
+                Thread.sleep(2000); // sleep to make sure PowerShell is open
+
+
+
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("PowerShell executable not found at: " + shellFile);
+                alert.showAndWait();
+            }
+        }
+        // catch for opening PowerShell
+        catch (IOException ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error opening PowerShell: " + ex.getMessage());
+            alert.showAndWait();
+
+        }
+        // catch for Thread.sleep
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void openConsoleAndRunNode() {
+        try {
+            String relayPath = "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\relayserverandplugin\\SOS Relay Server (run in cmd with node)\\sos-ws-relay-master";
+
+            // Create process builder for cmd
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "start /d \"" + relayPath + "\" cmd /k node ./ws-relay.js");
+
+            // Start cmd process
+            Process process = processBuilder.start();
+
+            // Wait for the process to complete
+            process.waitFor();
+
+            // Simulate pressing Enter three times
+            Robot robot = new Robot();
+            for (int i = 0; i < 3; i++) {
+                robot.keyPress(KeyEvent.VK_ENTER);
+                robot.keyRelease(KeyEvent.VK_ENTER);
+                Thread.sleep(1000); // Wait for 1 second between each Enter key press
+            }
+
+        } catch (IOException | InterruptedException | AWTException ex) {
+            // Exception occurred while executing commands
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Error executing commands: " + ex.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+
+
+
 }
