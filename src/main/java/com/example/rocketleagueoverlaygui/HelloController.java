@@ -32,22 +32,23 @@ public class HelloController {
     }
 
     private void focusRocketLeagueWindow() throws InterruptedException {
-        WinDef.HWND rocketLeagueWindow = User32.INSTANCE.FindWindow(null, "Rocket League (64-bit, DX11, Cooked)");
-        WinDef.HWND bakkesModConsoleWindow = User32.INSTANCE.FindWindow(null, "BakkesMod console (DirectX");
+        WinDef.HWND rocketLeagueWindow = User32.INSTANCE.FindWindow(null, "Rocket League (64-bit, DX11, Cooked)"); // Finds Rocket League window
+        WinDef.HWND bakkesModConsoleWindow = User32.INSTANCE.FindWindow(null, "BakkesMod console (DirectX"); // Finds BakkesMod Console window?
         if (rocketLeagueWindow != null) {
             // Bring the Rocket League window to the foreground
             User32.INSTANCE.ShowWindow(rocketLeagueWindow, User32.SW_RESTORE);
             User32.INSTANCE.SetForegroundWindow(rocketLeagueWindow);
 
-            Thread.sleep(10000);
+            // Wait for BakkesMod to inject the DLL files into Rocket League - *Necessary wait time*
+            Thread.sleep(10000); // wait for 10 seconds
 
-            // Simulate typing "plugin load sos" into the BakkesMod console
+            // Typing "plugin load sos" into the BakkesMod console
             try {
                 Robot robot = new Robot();
-                // Simulate pressing F6 to open BakkesMod console
+                // Pressing F6 to open BakkesMod console
                 robot.keyPress(KeyEvent.VK_F6);
                 robot.keyRelease(KeyEvent.VK_F6);
-                Thread.sleep(2000);
+                Thread.sleep(2000); // wait for 2 seconds
 
                 // Simulate typing the command "plugin load sos"
                 String command = "plugin load sos";
@@ -59,19 +60,22 @@ public class HelloController {
                 }
 
                 // Press Enter to execute the command
+                // Enter is being pressed, but not accepted into BakkesMod console
                 System.out.println("Pressing Enter...");
                 robot.keyPress(KeyEvent.VK_ENTER);
                 robot.keyRelease(KeyEvent.VK_ENTER);
                 System.out.println("Enter Pressed");
 
                 // Wait for BakkesMod to process the command
-                Thread.sleep(1000);
+                Thread.sleep(1000); // wait for 1 second
 
-                // Press ESC to close any open dialogs or menus
+                // Press ESC to close BakkesMod console
                 robot.keyPress(KeyEvent.VK_ESCAPE);
                 robot.keyRelease(KeyEvent.VK_ESCAPE);
 
-                Thread.sleep(1000); // Introduce a small delay
+                Thread.sleep(100);
+
+                Thread.sleep(1000); // wait for 1 second
             } catch (AWTException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -90,11 +94,11 @@ public class HelloController {
         try {
             String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe";
 
-            // Check if the BakkesMod executable exists
+            // Check if the BakkesMod exists
             File bakkesModFile = new File(bakkesModPath);
             if (bakkesModFile.exists()) {
                 Runtime.getRuntime().exec(bakkesModPath);
-                Thread.sleep(5000);
+                Thread.sleep(5000); // wait for 5 seconds
             } else {
                 System.out.println("BakkesMod not found at: " + bakkesModPath);
             }
@@ -140,17 +144,18 @@ public class HelloController {
             // Wait for the process to complete
             process.waitFor();
 
-            // Simulate pressing Enter three times
+            // Press enter 3 times
             Robot robot = new Robot();
             for (int i = 0; i < 3; i++) {
                 robot.keyPress(KeyEvent.VK_ENTER);
                 robot.keyRelease(KeyEvent.VK_ENTER);
                 Thread.sleep(1000); // Wait for 1 second between each Enter key press
             }
-            // wait 3 seconds
-            Thread.sleep(3000);
-            // focus on rocket league
-            focusRocketLeagueWindow();
+
+            Thread.sleep(3000); // wait 3 seconds
+
+            focusRocketLeagueWindow(); // focus on rocket league
+
         } catch (IOException | InterruptedException | AWTException ex) {
             // Exception occurred while executing commands
             ex.printStackTrace();
