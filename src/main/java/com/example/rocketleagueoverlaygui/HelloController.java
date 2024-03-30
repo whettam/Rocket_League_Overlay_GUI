@@ -24,13 +24,15 @@ public class HelloController {
     private Label welcomeText;
 
     @FXML
-    protected void onHelloButtonClick() {
+    protected void onHelloButtonClick() throws InterruptedException {
             welcomeText.setText("Running Overlay");
-            openBakkesMod();
-            openConsoleAndRunNode();
+            openBakkesMod(); // open BakkesMod
+            openConsoleAndRunNode(); // open command prompt and start relay server
+            focusRocketLeagueWindow(); // focus on rocket league and run "plugin load sos" in BakkesMod console
             openOBS(); // open OBS Studio
     }
 
+    //Grabs a hold of Rocket League window, opens BakkesMod console, enters "plugin load sos" command
     private void focusRocketLeagueWindow() throws InterruptedException {
         WinDef.HWND rocketLeagueWindow = User32.INSTANCE.FindWindow(null, "Rocket League (64-bit, DX11, Cooked)"); // Finds Rocket League window
         WinDef.HWND bakkesModConsoleWindow = User32.INSTANCE.FindWindow(null, "BakkesMod console (DirectX"); // Finds BakkesMod Console window?
@@ -153,9 +155,6 @@ public class HelloController {
             }
 
             Thread.sleep(3000); // wait 3 seconds
-
-            focusRocketLeagueWindow(); // focus on rocket league
-
         } catch (IOException | InterruptedException | AWTException ex) {
             // Exception occurred while executing commands
             ex.printStackTrace();
