@@ -1,5 +1,6 @@
 package com.example.rocketleagueoverlaygui;
 
+import com.sun.jna.platform.unix.X11;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -13,6 +14,10 @@ import java.net.URISyntaxException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+
 public class HelloController {
 
     @FXML
@@ -20,22 +25,59 @@ public class HelloController {
 
     @FXML
     protected void onHelloButtonClick() {
-        String filePath = overlayHTML();
-        if (filePath != null) {
-            welcomeText.setText("File found");
-            openFiles(filePath); // open overlay.html
-            openOBS(); // open OBS Studio
+            welcomeText.setText("Running Overlay");
+            openBakkesMod();
             openConsoleAndRunNode();
-//            openShell(); // open PowerShell
-        } else {
-            welcomeText.setText("File not found.");
-        }
+            openOBS(); // open OBS Studio
     }
 
-    //accessing the overlay.html file
-    private static String overlayHTML() {
-        System.out.println(getHostName() + "yeeeeeeeett"); // print users name to console
-        return "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\Rocket League Dynamic Overlay\\overlay.html";
+    private void focusRocketLeagueWindow() throws InterruptedException {
+        WinDef.HWND rocketLeagueWindow = User32.INSTANCE.FindWindow(null, "Rocket League (64-bit, DX11, Cooked)");
+        WinDef.HWND bakkesModConsoleWindow = User32.INSTANCE.FindWindow(null, "BakkesMod console (DirectX");
+        if (rocketLeagueWindow != null) {
+            // Bring the Rocket League window to the foreground
+            User32.INSTANCE.ShowWindow(rocketLeagueWindow, User32.SW_RESTORE);
+            User32.INSTANCE.SetForegroundWindow(rocketLeagueWindow);
+
+            Thread.sleep(10000);
+
+            // Simulate typing "plugin load sos" into the BakkesMod console
+            try {
+                Robot robot = new Robot();
+                // Simulate pressing F6 to open BakkesMod console
+                robot.keyPress(KeyEvent.VK_F6);
+                robot.keyRelease(KeyEvent.VK_F6);
+                Thread.sleep(2000);
+
+                // Simulate typing the command "plugin load sos"
+                String command = "plugin load sos";
+                for (char c : command.toCharArray()) {
+                    int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
+                    robot.keyPress(keyCode);
+                    robot.keyRelease(keyCode);
+                    Thread.sleep(100);
+                }
+
+                // Press Enter to execute the command
+                System.out.println("Pressing Enter...");
+                robot.keyPress(KeyEvent.VK_ENTER);
+                robot.keyRelease(KeyEvent.VK_ENTER);
+                System.out.println("Enter Pressed");
+
+                // Wait for BakkesMod to process the command
+                Thread.sleep(1000);
+
+                // Press ESC to close any open dialogs or menus
+                robot.keyPress(KeyEvent.VK_ESCAPE);
+                robot.keyRelease(KeyEvent.VK_ESCAPE);
+
+                Thread.sleep(1000); // Introduce a small delay
+            } catch (AWTException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Rocket League window not found.");
+        }
     }
 
     //access the current username of the Windows profile logged in
@@ -43,52 +85,16 @@ public class HelloController {
         return System.getProperty("user.name");
     }
 
-    // opens BakkesMod and overlay.html
-    private void openFiles(String filePath) {
+    // Opens BakkesMod
+    private void openBakkesMod() {
         try {
-            if (Desktop.isDesktopSupported()) {
-                // Replace backslashes with forward slashes and encode spaces
-                String encodedPath = filePath.replace("\\", "/").replace(" ", "%20");
-                Desktop.getDesktop().browse(new URI("file:///" + encodedPath)); // Open HTML file
-
-
-                String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe";
-
-                // Check if the BakkesMod executable exists
-                File bakkesModFile = new File(bakkesModPath);
-                if (bakkesModFile.exists()) {
-                    Runtime.getRuntime().exec(bakkesModPath);
-                } else {
-                    System.out.println("BakkesMod not found at: " + bakkesModPath);
-                }
-            } else {
-                System.out.println("Desktop not supported, cannot open files.");
-            }
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // opens BakkesMod Console in Rocket League - NOT WORKING
-    private void openF6PanelInBakkesMod() {
-        try {
-            // Specify the path to the BakkesMod executable
             String bakkesModPath = "C:/Program Files/BakkesMod/BakkesMod.exe";
 
             // Check if the BakkesMod executable exists
             File bakkesModFile = new File(bakkesModPath);
             if (bakkesModFile.exists()) {
-                // Execute BakkesMod executable
-                Process process = Runtime.getRuntime().exec(bakkesModPath);
-
-                // Sleep for a short duration to ensure BakkesMod has initialized
-                Thread.sleep(2000); // Adjust as needed
-
-                // Send command to BakkesMod console to open F6 panel
-                OutputStream outputStream = process.getOutputStream();
-                String command = "togglemenu F6\n"; // Command to open F6 panel
-                outputStream.write(command.getBytes());
-                outputStream.flush();
+                Runtime.getRuntime().exec(bakkesModPath);
+                Thread.sleep(5000);
             } else {
                 System.out.println("BakkesMod not found at: " + bakkesModPath);
             }
@@ -96,7 +102,6 @@ public class HelloController {
             e.printStackTrace();
         }
     }
-
     //opens OBS Studio
     public void openOBS() {
         try {
@@ -121,46 +126,7 @@ public class HelloController {
             alert.showAndWait();
         }
     }
-
-    //opens PowerShell
-    public void openShell() {
-        try {
-
-            String shellPath = "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Windows PowerShell\\Windows PowerShell ISE.lnk"; // PowerShell file path
-            String relayPath = "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\relayserverandplugin\\SOS Relay Server (run in cmd with node)\\sos-ws-relay-master";
-
-            File shellFile = new File(shellPath);
-            if (shellFile.exists() && shellFile.isFile()) {
-                // Open PowerShell using default application
-                Desktop.getDesktop().open(shellFile);
-                Thread.sleep(2000); // sleep to make sure PowerShell is open
-
-
-
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("PowerShell executable not found at: " + shellFile);
-                alert.showAndWait();
-            }
-        }
-        // catch for opening PowerShell
-        catch (IOException ex) {
-            ex.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Error opening PowerShell: " + ex.getMessage());
-            alert.showAndWait();
-
-        }
-        // catch for Thread.sleep
-        catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    // opens command prompt, cd to file path, and run node command for ws-relay.js
     public void openConsoleAndRunNode() {
         try {
             String relayPath = "C:\\Users\\" + getHostName() + "\\Documents\\Rocket_League_Overlay\\Rocket League DO\\relayserverandplugin\\SOS Relay Server (run in cmd with node)\\sos-ws-relay-master";
@@ -181,7 +147,10 @@ public class HelloController {
                 robot.keyRelease(KeyEvent.VK_ENTER);
                 Thread.sleep(1000); // Wait for 1 second between each Enter key press
             }
-
+            // wait 3 seconds
+            Thread.sleep(3000);
+            // focus on rocket league
+            focusRocketLeagueWindow();
         } catch (IOException | InterruptedException | AWTException ex) {
             // Exception occurred while executing commands
             ex.printStackTrace();
@@ -192,8 +161,4 @@ public class HelloController {
             alert.showAndWait();
         }
     }
-
-
-
-
 }
