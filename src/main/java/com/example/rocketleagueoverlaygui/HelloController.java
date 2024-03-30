@@ -50,7 +50,7 @@ public class HelloController {
                 robot.keyRelease(KeyEvent.VK_F6);
                 Thread.sleep(2000); // wait for 2 seconds
 
-                // Simulate typing the command "plugin load sos"
+                // "plugin load sos" key presses
                 String command = "plugin load sos";
                 for (char c : command.toCharArray()) {
                     int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
