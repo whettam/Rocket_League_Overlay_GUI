@@ -50,7 +50,7 @@ public class HelloController {
                 // Pressing F6 to open BakkesMod console
                 robot.keyPress(KeyEvent.VK_F6);
                 robot.keyRelease(KeyEvent.VK_F6);
-                Thread.sleep(2000); // wait for 2 seconds
+                Thread.sleep(5000); // wait for 5 seconds
 
                 // "plugin load sos" key presses
                 String command = "plugin load sos";
@@ -61,19 +61,21 @@ public class HelloController {
                     Thread.sleep(100);
                 }
 
+                System.out.println("Focused window: " + rocketLeagueWindow);
+                Robot robot2 = new Robot();
                 // Press Enter to execute the command
                 // Enter is being pressed, but not accepted into BakkesMod console
                 System.out.println("Pressing Enter...");
-                robot.keyPress(KeyEvent.VK_ENTER);
-                robot.keyRelease(KeyEvent.VK_ENTER);
+                robot2.keyPress(KeyEvent.VK_ENTER);
+                robot2.keyRelease(KeyEvent.VK_ENTER);
                 System.out.println("Enter Pressed");
 
                 // Wait for BakkesMod to process the command
                 Thread.sleep(1000); // wait for 1 second
 
                 // Press ESC to close BakkesMod console
-                robot.keyPress(KeyEvent.VK_ESCAPE);
-                robot.keyRelease(KeyEvent.VK_ESCAPE);
+                robot2.keyPress(KeyEvent.VK_ESCAPE);
+                robot2.keyRelease(KeyEvent.VK_ESCAPE);
 
                 Thread.sleep(100);
 
